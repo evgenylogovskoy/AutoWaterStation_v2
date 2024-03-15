@@ -57,6 +57,10 @@ void ENTER_CLICK()
         {
             currentDisplayMode = RUN;
         }
+        if (data[selectedMenuItem].type == DataEntity::DataType::DATETIME)
+        {
+            currentDisplayMode = TIME;
+        }
     }
     else if (currentDisplayMode == EDIT)
     {
@@ -76,11 +80,22 @@ void ENTER_CLICK()
             Serial.println("Run executed.");
         }
     }
+    else if (currentDisplayMode == TIME)
+    {
+        if (data[selectedMenuItem].type == DataEntity::DataType::DATETIME)
+        {
+            saveTimeValues();
+            currentDisplayMode = SETTINGS;
+            cursorPosition = 0;
+            Serial.println("Time saved.");
+        }
+    }
     Serial.println("ENTER");
 }
 
 void ENTER_LONG_PRESS()
 {
+    updateTimeForBacklightTimeout();
     if (data[selectedMenuItem].type == DataEntity::DataType::VALUE)
     {
         selectedMenuItem = 0;
@@ -88,7 +103,6 @@ void ENTER_LONG_PRESS()
     }
 
     Serial.println("ENTER HOLDED");
-    updateTimeForBacklightTimeout();
 }
 void BACK_CLICK()
 {
@@ -110,33 +124,69 @@ void BACK_CLICK()
             Serial.println("Run cancelled.");
         }
     }
+    if (currentDisplayMode == TIME)
+    {
+        if (data[selectedMenuItem].type == DataEntity::DataType::DATETIME)
+        {
+            currentDisplayMode = SETTINGS;
+            cursorPosition = 0;
+            setTempDateValues();
+            Serial.println("DateTime set cancelled.");
+        }
+    }
 
     Serial.println("BACK");
 }
 void BACK_LONG_PRESS()
 {
+    updateTimeForBacklightTimeout();
     currentDisplayMode = HOMEPAGE;
     Serial.println("BACK HOLDED");
     selectedMenuItem = 0;
-    updateTimeForBacklightTimeout();
 }
 void DOWN_CLICK()
 {
+    updateTimeForBacklightTimeout();
     if (currentDisplayMode == SETTINGS)
     {
-
         if (selectedMenuItem >= 0 && selectedMenuItem < getMenuDataSize() - 1)
         {
             selectedMenuItem++;
             isMenueItemChanged = true;
         }
     }
-    updateTimeForBacklightTimeout();
-
+    if (currentDisplayMode == TIME)
+    {
+        if (daysPosition && curDay.toInt() > 1 && curDay.toInt() < 31)
+        {
+            curDay = curDay.toInt() - 1;
+        }
+        if (monthPosition && curMonth.toInt() > 1 && curMonth.toInt() < 12)
+        {
+            curMonth = curMonth.toInt() - 1;
+        }
+        if (yearsPosition && curYear.toInt() > 2023 && curYear.toInt() < 2033)
+        {
+            curYear = curYear.toInt() - 1;
+        }
+        if (hoursPosition && curHour.toInt() > 1 && curHour.toInt() < 24)
+        {
+            curHour = curHour.toInt() - 1;
+        }
+        if (minutesPosition && curMinutes.toInt() > 1 && curMinutes.toInt() < 60)
+        {
+            curMinutes = curMinutes.toInt() - 1;
+        }
+        if (secondsPosition && curSeconds.toInt() > 1 && curSeconds.toInt() < 60)
+        {
+            curSeconds = curSeconds.toInt() - 1;
+        }
+    }
     Serial.println("DOWN");
 }
 void UP_CLICK()
 {
+    updateTimeForBacklightTimeout();
     if (currentDisplayMode == SETTINGS)
     {
         if (selectedMenuItem > 0 && selectedMenuItem < getMenuDataSize())
@@ -145,11 +195,38 @@ void UP_CLICK()
             isMenueItemChanged = true;
         }
     }
-    updateTimeForBacklightTimeout();
+    if (currentDisplayMode == TIME)
+    {
+        if (daysPosition && curDay.toInt() >= 1 && curDay.toInt() < 31)
+        {
+            curDay = curDay.toInt() + 1;
+        }
+        if (monthPosition && curMonth.toInt() >= 1 && curMonth.toInt() < 12)
+        {
+            curMonth = curMonth.toInt() + 1;
+        }
+        if (yearsPosition && curYear.toInt() >= 2024 && curYear.toInt() < 2033)
+        {
+            curYear = curYear.toInt() + 1;
+        }
+        if (hoursPosition && curHour.toInt() >= 1 && curHour.toInt() < 24)
+        {
+            curHour = curHour.toInt() + 1;
+        }
+        if (minutesPosition && curMinutes.toInt() >= 1 && curMinutes.toInt() < 60)
+        {
+            curMinutes = curMinutes.toInt() + 1;
+        }
+        if (secondsPosition && curSeconds.toInt() >= 1 && curSeconds.toInt() < 60)
+        {
+            curSeconds = curSeconds.toInt() + 1;
+        }
+    }
     Serial.println("UP");
 }
 void LEFT_CLICK()
 {
+    updateTimeForBacklightTimeout();
     if (currentDisplayMode == EDIT)
     {
         if (data[selectedMenuItem].type == DataEntity::DataType::VALUE)
@@ -157,7 +234,17 @@ void LEFT_CLICK()
             data[selectedMenuItem].decrementTempValue();
         }
     }
-    updateTimeForBacklightTimeout();
+    if (currentDisplayMode == TIME)
+    {
+        if (data[selectedMenuItem].type == DataEntity::DataType::DATETIME)
+        {
+            if (cursorPosition > 0 && cursorPosition < 20)
+            {
+                cursorPosition = cursorPosition - 3;
+            }
+        }
+    }
+
     Serial.println("LEFT");
 }
 void RIGHT_CLICK()
@@ -170,8 +257,16 @@ void RIGHT_CLICK()
             data[selectedMenuItem].incrementTempValue();
         }
     }
+    if (data[selectedMenuItem].type == DataEntity::DataType::DATETIME)
+    {
+        if (cursorPosition >= 0 && cursorPosition < 19)
+        {
+            cursorPosition = cursorPosition + 3;
+        }
+    }
     Serial.println("RIGHT");
 }
+
 void proceedButtons()
 {
     int analog = analogRead(analogButtonsPin);

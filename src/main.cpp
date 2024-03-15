@@ -9,6 +9,7 @@ void setup()
   initDisplay();
   currentDisplayMode = HOMEPAGE;
   configureButtons();
+  
 }
 
 void loop()

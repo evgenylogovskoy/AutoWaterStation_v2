@@ -5,6 +5,7 @@
 
 LiquidCrystal_I2C lcd(0x3f, 20, 4);
 #define backLightTimeout 30
+String curDateTime = "";
 ////////////////////////
 // Methods declaration zone
 void drawHomePage();
@@ -16,6 +17,8 @@ void clearRow(byte rowToClear);
 void clearMenuRows();
 void drawEditPage();
 void drawRunnablePage();
+void drawDateEditPage();
+void setCurTimeVariable();
 // End - Methods declaration zone
 
 ////////////////////////
@@ -56,9 +59,17 @@ void renderDisplay()
         {
             lcd.clear();
         }
-
         drawRunnablePage();
         previousState = RUN;
+    }
+    if (currentDisplayMode == TIME)
+    {
+        if (previousState != TIME)
+        {
+            lcd.clear();
+        }
+        drawDateEditPage();
+        previousState = TIME;
     }
 }
 
@@ -99,6 +110,79 @@ void drawMenuItems()
         lcd.setCursor(0, 3);
         lcd.print(">");
     }
+}
+
+void drawDateEditPage()
+{
+    lcd.createChar(0, underLine);
+    lcd.setCursor(5, 0);
+    lcd.print(data[selectedMenuItem].name);
+
+    lcd.setCursor(0, 1);
+    lcd.print(addZeroIfRequired(curDay) + "/" + addZeroIfRequired(curMonth) + "/" +
+              curYear + "  " + addZeroIfRequired(curHour) + ":" +
+              addZeroIfRequired(curMinutes) + ":" +
+              addZeroIfRequired(curSeconds));
+    lcd.setCursor(0, 2);
+    lcd.print("                    ");
+
+    if (cursorPosition >= 0 && cursorPosition < 3)
+    {
+        lcd.setCursor(0, 2);
+        lcd.print(char(0));
+        lcd.setCursor(1, 2);
+        lcd.print(char(0));
+        setSelectedAsTrue(DAYS);
+    }
+    else if (cursorPosition >= 3 && cursorPosition < 5)
+    {
+        lcd.setCursor(3, 2);
+        lcd.print(char(0));
+        lcd.setCursor(4, 2);
+        lcd.print(char(0));
+        setSelectedAsTrue(MONTH);
+    }
+    else if (cursorPosition >= 6 && cursorPosition < 11)
+    {
+        lcd.setCursor(6, 2);
+        lcd.print(char(0));
+        lcd.setCursor(7, 2);
+        lcd.print(char(0));
+        lcd.setCursor(8, 2);
+        lcd.print(char(0));
+        lcd.setCursor(9, 2);
+        lcd.print(char(0));
+        setSelectedAsTrue(YEARS);
+    }
+    else if (cursorPosition >= 12 && cursorPosition < 14)
+    {
+        lcd.setCursor(12, 2);
+        lcd.print(char(0));
+        lcd.setCursor(13, 2);
+        lcd.print(char(0));
+        setSelectedAsTrue(HOURS);
+    }
+    else if (cursorPosition >= 15 && cursorPosition < 17)
+    {
+        lcd.setCursor(15, 2);
+        lcd.print(char(0));
+        lcd.setCursor(16, 2);
+        lcd.print(char(0));
+        setSelectedAsTrue(MINUTES);
+    }
+    else if (cursorPosition >= 18 && cursorPosition < 20)
+    {
+        lcd.setCursor(18, 2);
+        lcd.print(char(0));
+        lcd.setCursor(19, 2);
+        lcd.print(char(0));
+        setSelectedAsTrue(SECONDS);
+    }
+
+    lcd.setCursor(0, 3);
+    lcd.print("< Cancel");
+    lcd.setCursor(14, 3);
+    lcd.print("Save >");
 }
 void drawRunnablePage()
 {
@@ -141,6 +225,7 @@ void initDisplay()
     clockInit();
     lcd.init();
     lcd.backlight();
+    setTempDateValues();
 }
 
 void clearRow(byte rowToClear)
