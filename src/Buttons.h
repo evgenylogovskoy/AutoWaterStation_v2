@@ -2,7 +2,6 @@
 #include "Global.h"
 
 #define analogButtonsPin A0
-#define backLightTimeout 30
 
 String currentStatus = "OK/ALERT";     // OK/ALERT
 String currentActivity = "WORKING..."; // NO/Fill/Flush/Air/Vent
@@ -157,11 +156,11 @@ void DOWN_CLICK()
     }
     if (currentDisplayMode == TIME)
     {
-        if (daysPosition && curDay.toInt() > 1 && curDay.toInt() < 31)
+        if (daysPosition && curDay.toInt() > 1 && curDay.toInt() <= 31)
         {
             curDay = curDay.toInt() - 1;
         }
-        if (monthPosition && curMonth.toInt() > 1 && curMonth.toInt() < 12)
+        if (monthPosition && curMonth.toInt() > 1 && curMonth.toInt() <= 12)
         {
             curMonth = curMonth.toInt() - 1;
         }
@@ -169,15 +168,15 @@ void DOWN_CLICK()
         {
             curYear = curYear.toInt() - 1;
         }
-        if (hoursPosition && curHour.toInt() > 1 && curHour.toInt() < 24)
+        if (hoursPosition && curHour.toInt() >= 1 && curHour.toInt() < 23)
         {
             curHour = curHour.toInt() - 1;
         }
-        if (minutesPosition && curMinutes.toInt() > 1 && curMinutes.toInt() < 60)
+        if (minutesPosition && curMinutes.toInt() > 1 && curMinutes.toInt() <= 59)
         {
             curMinutes = curMinutes.toInt() - 1;
         }
-        if (secondsPosition && curSeconds.toInt() > 1 && curSeconds.toInt() < 60)
+        if (secondsPosition && curSeconds.toInt() > 1 && curSeconds.toInt() <= 59)
         {
             curSeconds = curSeconds.toInt() - 1;
         }
@@ -209,15 +208,15 @@ void UP_CLICK()
         {
             curYear = curYear.toInt() + 1;
         }
-        if (hoursPosition && curHour.toInt() >= 1 && curHour.toInt() < 24)
+        if (hoursPosition && curHour.toInt() >= 0 && curHour.toInt() < 23)
         {
             curHour = curHour.toInt() + 1;
         }
-        if (minutesPosition && curMinutes.toInt() >= 1 && curMinutes.toInt() < 60)
+        if (minutesPosition && curMinutes.toInt() >= 1 && curMinutes.toInt() < 59)
         {
             curMinutes = curMinutes.toInt() + 1;
         }
-        if (secondsPosition && curSeconds.toInt() >= 1 && curSeconds.toInt() < 60)
+        if (secondsPosition && curSeconds.toInt() >= 1 && curSeconds.toInt() < 59)
         {
             curSeconds = curSeconds.toInt() + 1;
         }

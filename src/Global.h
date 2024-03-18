@@ -3,11 +3,15 @@
 #include <Arduino.h>
 #include <StringUtils.h>
 #include "DataEntity.h"
+#include <microDS18B20.h>
 
+unsigned long backLightTimeout = 30000L;
+unsigned long backilghtStartTime = 0L;
+MicroDS18B20<8> tempSensorOnTransformer;
 #define NUMITEMS(arg) ((unsigned int)(sizeof(arg) / sizeof(arg[0])))
 template <typename T, size_t N>
 size_t ArraySize(T (&)[N]) { return N; }
-
+int flowValue = 0;
 byte up_Arrow[8] = {
     B00100,
     B01110,
@@ -80,8 +84,6 @@ String curYear;
 String curHour;
 String curMinutes;
 String curSeconds = "00";
-
-long backilghtStartTime = 0L;
 
 DataEntity data[] = {
     // Changable
@@ -159,7 +161,6 @@ String addZeroIfRequired(String data)
     }
 }
 
-
 void updateTimeForBacklightTimeout()
 {
     backilghtStartTime = millis();
@@ -181,6 +182,12 @@ void printFreeMem()
     Serial.print(curSRAM);
     Serial.print(F("    Lowest was: "));
     Serial.println(lowestSRAM);
+}
+
+float getTempFromSensorOnTransformer()
+{
+    tempSensorOnTransformer.requestTemp();
+    return tempSensorOnTransformer.getTemp();
 }
 
 #endif

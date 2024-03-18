@@ -2,9 +2,10 @@
 #include <LiquidCrystal_I2C.h>
 #include "Clock.h"
 #include "Global.h"
-
+#include "Relays.h"
+#include "WaterFlowSensor.h"
 LiquidCrystal_I2C lcd(0x3f, 20, 4);
-#define backLightTimeout 30
+
 String curDateTime = "";
 ////////////////////////
 // Methods declaration zone
@@ -203,8 +204,9 @@ void drawHomePage()
     lcd.print("Activity: WORKING...");
 
     lcd.setCursor(0, 2);
-    lcd.print("Status: OK/ALERT");
-
+    // lcd.print("Status: OK/WARNING/ALERT");
+    lcd.print("T1=" + String(getTempFromSensorOnTransformer()) + ", T2=" + String(rtc.getTemperature()));
+    // lcd.print(",T2="+t2);
     lcd.setCursor(0, 3);
     lcd.print(addZeroIfRequired(String(rtc.getDate())));
     lcd.print("/");
@@ -244,7 +246,7 @@ void clearMenuRows()
 
 void disableBackLightIfTimeEnd()
 {
-    if (millis() - backilghtStartTime > backLightTimeout * 1000)
+    if (millis() - backilghtStartTime > backLightTimeout)
     {
         lcd.noBacklight();
     }

@@ -22,6 +22,8 @@ MicroDS3231 getClockInstance()
 void setCompileTime()
 {
     rtc.setTime(COMPILE_TIME);
+    Serial.print("Time set: ");
+    Serial.println(COMPILE_TIME);
 }
 
 void clockInit()
@@ -44,7 +46,7 @@ String getDateTime()
 }
 void setTempDateValues()
 {
-    curDay = addZeroIfRequired(String(rtc.getDay()));
+    curDay = addZeroIfRequired(String(rtc.getDate()));
     curMonth = addZeroIfRequired(String(rtc.getMonth()));
     curYear = addZeroIfRequired(String(rtc.getYear()));
     curHour = addZeroIfRequired(String(rtc.getHours()));
